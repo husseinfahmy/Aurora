@@ -109,9 +109,14 @@ namespace Aurora.Profiles.CSGO.Layers
                         else
                             bombflashamount = Math.Pow(Math.Sin((bombtimer.ElapsedMilliseconds - bombflashedat) / 80.0 + 0.25), 2.0);
                     }
-                    else if (bombtimer.ElapsedMilliseconds >= 38000)
+                    else if (bombtimer.ElapsedMilliseconds >= 30000)
                     {
-                        isCritical = true;
+                        no_kit_too_late = true;
+                        bombflashamount = (double)bombtimer.ElapsedMilliseconds / 40000.0;
+                    }
+                    else if (bombtimer.ElapsedMilliseconds >= 35000)
+                    {
+                        kit_too_late = true;
                         bombflashamount = (double)bombtimer.ElapsedMilliseconds / 40000.0;
                     }
                     else if (bombtimer.ElapsedMilliseconds >= 45000)
@@ -120,22 +125,15 @@ namespace Aurora.Profiles.CSGO.Layers
                         csgostate.Round.Bomb = BombState.Undefined;
                     }
 
-                    if (!isCritical)
-                    {
-                        if (bombflashamount <= 0.05 && bombflash)
-                            bombflash = false;
-
-                        if (!bombflash)
-                            bombflashamount = 0.0;
-                    }
-
                     if (!Properties.GradualEffect)
                         bombflashamount = Math.Round(bombflashamount);
 
                     Color bombcolor = Properties.FlashColor;
 
-                    if (isCritical)
-                        bombcolor = Utils.ColorUtils.MultiplyColorByScalar(Properties.PrimedColor, Math.Min(bombflashamount, 1.0));
+                    if (no_kit_too_late)
+                        bombcolor = Color.FromName("aqua")
+                    else if (kit_too_late)
+                        bombcolor = Color.FromName("indigo")
                     else
                         bombcolor = Utils.ColorUtils.MultiplyColorByScalar(Properties.FlashColor, Math.Min(bombflashamount, 1.0));
 
